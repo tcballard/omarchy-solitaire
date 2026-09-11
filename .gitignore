@@ -6,6 +6,6 @@ __pycache__/
 build/
 dist/
 *.pkg.tar.zst
-src/
 pkg/
+target/
 

@@ -39,3 +39,51 @@ theme, replaces `~/.local/state/omarchy/current/theme`, and stores its name at
 - Art direction sign-off and the team's special deck artwork.
 - Whether to add a solver/winnable deals or additional solitaire variants later.
 - Public release and distribution channel choice after the native desktop check.
+
+## Rust Arcade milestone — supersedes the Python/Qt implementation
+
+- Rust is now the implementation language, following Tom's Arcade default.
+  egui/eframe 0.31.1 matches the collection's Rust desktop approach and supports
+  Wayland, X11 and AccessKit. The pinned Cargo.lock is committed.
+- Replace the Python runtime and QML, retaining the previous implementation in
+  Git history. Python is used only by the optional development screenshot script.
+- Preserve the version-1 game and session formats. Golden fixtures were produced
+  by the original Python engine before removal. A local MT19937 compatibility
+  implementation preserves Python's integer-seeded shuffle and restart behavior.
+- Preserve the original save once before migration. Use an OS file lock plus a
+  Qt-compatible lock reservation so the old app cannot concurrently write.
+- Use original mirrored court portraits with rank-specific headwear, flowers and
+  sceptres. Horizontal rank/suit indexes remain visible under overlapping cards.
+- Use short 180ms deal, flip, move and return transitions. Reduced motion bypasses
+  transitions and celebration; idle rendering wakes at most twice a second,
+  apart from window/input activity and explicitly hovered holographic backs.
+- Compress hidden-card spacing first in short windows. Keep visible indexes at
+  a readable size and scroll only when a long arrangement exceeds the viewport.
+- Rasterize imported SVG at a bounded 500 × 700 size, including validation, to
+  avoid unbounded allocations from intrinsic SVG dimensions. Static shapes only.
+- Keep the previous relaxed scoring rules. Exact historical Windows scoring,
+  Vegas, a solver, sounds and additional solitaire variants are outside this milestone.
+- Build a 0.2.0 Arch package. CI tests native rendering plus package installation,
+  launch and removal. A real Omarchy acceptance session remains a release gate.
+- This PR includes the root-PKGBUILD correction from PR #1, since migrating the
+  package replaces that Python packaging path. Neither PR is merged automatically.
+
+## Approved engraved deck
+
+Replace the first geometric deck with the approved engraved direction. Pattern
+IDs stay 0/1/2/3: Tilework, Engraved, Foil, Special. Existing saves keep their
+selected slot and custom artwork. Horizontal serif indexes remain visible under
+tableau overlaps; lower indexes and court portraits rotate 180 degrees. The
+three generated rank portraits are shared across suits, with explicit suit
+medallions and indexes. Backs are authored SVG with theme-derived inks and the
+unchanged official mark. Mipmap filtering prevents fine artwork aliasing.
+All assets are embedded in the executable; there is no new runtime dependency.
+
+## Number-card design pass
+
+Use DejaVu Serif Bold at a consistent 78-unit ink height on the 500-unit card.
+Normalize glyph bearings and derive suit placement from visible rank width, with
+24 units of clear separation. Ten retains its natural proportions. Corner insets
+are 32 × 28 units, within the tableau exposure. The pip field spans y=190–510,
+with symmetric side columns at x=155/345 and larger low-rank pips; nine and ten
+use a denser four-row layout. The lower index is still an exact 180-degree copy.

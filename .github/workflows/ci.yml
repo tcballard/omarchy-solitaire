@@ -1,39 +1,52 @@
-name: Native app checks
+name: Native Rust checks
 on:
   push:
   pull_request:
 permissions:
   contents: read
 jobs:
-  tests:
+  rust:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          python-version: '3.12'
-      - run: sudo apt-get update && sudo apt-get install -y libegl1 libopengl0 libxkbcommon0 fonts-dejavu-core desktop-file-utils
-      - run: python -m pip install . build
-      - run: python -m unittest discover -s tests -v
-        env:
-          QT_QPA_PLATFORM: offscreen
-          QT_QUICK_BACKEND: software
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: sudo apt-get update && sudo apt-get install -y libegl1-mesa-dev libgl1-mesa-dev libxkbcommon-dev libxkbcommon-x11-0 libwayland-dev libx11-dev libxi-dev libxcursor-dev libxrandr-dev xvfb desktop-file-utils
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets -- -D warnings
+      - run: cargo test --locked
+      - run: cargo build --locked --release
+      - run: cargo build --locked --release --example deck-preview
       - run: desktop-file-validate packaging/io.github.tcballard.omarchy-solitaire.desktop
-      - run: python -m build
+      - name: Capture the native application
+        run: |
+          xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 python tools/render_previews.py --binary target/release/omarchy-solitaire --output-dir native-previews --deck-binary target/release/examples/deck-preview
+          test -s native-previews/table.png
+          test -s native-previews/compact.png
       - uses: actions/upload-artifact@v4
         with:
-          name: python-distributions
-          path: dist/*
+          name: native-previews
+          path: native-previews/*.png
   arch-package:
     runs-on: ubuntu-latest
     container: archlinux:base-devel
     steps:
-      - run: pacman -Syu --noconfirm git python python-build python-installer python-setuptools python-wheel pyside6 qt6-declarative qt6-svg qt6-wayland ttf-dejavu
+      - run: pacman -Syu --noconfirm git rust libglvnd libx11 libxcursor libxi libxrandr libxkbcommon libxkbcommon-x11 wayland dbus mesa xorg-server-xvfb xorg-xauth
       - uses: actions/checkout@v4
       - run: |
           useradd -m builder
           chown -R builder:builder "$GITHUB_WORKSPACE"
-          su builder -c "cd '$GITHUB_WORKSPACE' && makepkg -p packaging/PKGBUILD --noconfirm"
+          su builder -c "cd '$GITHUB_WORKSPACE' && makepkg --noconfirm"
+      - name: Install, launch, and remove the built package
+        run: |
+          pacman -U --noconfirm ./*.pkg.tar.zst
+          su builder -c 'cd /tmp && xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 omarchy-solitaire --state-dir /tmp/solitaire-package-test --screenshot /tmp/solitaire-package.png'
+          test -s /tmp/solitaire-package.png
+          omarchy-solitaire --version
+          pacman -R --noconfirm omarchy-solitaire
+          test ! -e /usr/bin/omarchy-solitaire
       - uses: actions/upload-artifact@v4
         with:
           name: arch-package

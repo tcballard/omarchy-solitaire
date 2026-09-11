@@ -9,17 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux:base-devel
     steps:
-      - run: pacman -Syu --noconfirm git python python-build python-installer python-setuptools python-wheel pyside6 qt6-declarative qt6-svg qt6-wayland ttf-dejavu
+      - run: pacman -Syu --noconfirm git rust libglvnd libx11 libxcursor libxi libxrandr libxkbcommon libxkbcommon-x11 wayland dbus mesa xorg-server-xvfb xorg-xauth python
       - uses: actions/checkout@v4
-      - name: Verify version agrees with tag
-        shell: bash
+      - name: Verify version agrees with tag and package
         run: |
-          version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-          test "${GITHUB_REF_NAME}" = "v${version}"
+          version=$(python -c "import tomllib; print(tomllib.load(open('Cargo.toml','rb'))['package']['version'])")
+          test "$GITHUB_REF_NAME" = "v$version"
+          . ./PKGBUILD
+          test "$pkgver" = "$version"
       - run: |
           useradd -m builder
           chown -R builder:builder "$GITHUB_WORKSPACE"
-          su builder -c "cd '$GITHUB_WORKSPACE' && makepkg -p packaging/PKGBUILD --noconfirm"
+          su builder -c "cd '$GITHUB_WORKSPACE' && makepkg --noconfirm"
+          pacman -U --noconfirm ./*.pkg.tar.zst
+          su builder -c 'cd /tmp && xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 omarchy-solitaire --state-dir /tmp/solitaire-package-test --screenshot /tmp/solitaire-package.png'
+          test -s /tmp/solitaire-package.png
           sha256sum *.pkg.tar.zst > SHA256SUMS
       - uses: softprops/action-gh-release@v2
         with:
@@ -28,11 +32,11 @@ jobs:
             *.pkg.tar.zst
             SHA256SUMS
           body: |
-            Native Klondike for Omarchy. Download the Arch package and run:
+            Native Rust Klondike for Omarchy. Download the Arch package and run:
             `sudo pacman -U ./omarchy-solitaire-*.pkg.tar.zst`
 
-            Includes draw-one/draw-three, undo, hints, resume, theme-following
-            official Omarchy card backs, custom artwork and an optional holographic finish.
+            Includes original court illustrations, animated deals and moves,
+            compatible Python save migration, themed official Omarchy card backs,
+            custom SVG/PNG artwork, draw-one/draw-three, undo, hints and resume.
 
-            Desktop acceptance on a real Omarchy session is required before
-            this draft is promoted to a public release.
+            Real Omarchy desktop acceptance is required before promoting this draft.

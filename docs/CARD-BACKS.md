@@ -1,7 +1,9 @@
 # Card-back artwork handoff
 
 The game is ready for special illustrated decks. The official Omarchy decal is
-already on all three built-in backs. Imported artwork replaces the entire back,
+already on all three built-in backs: **Tilework** (default), **Engraved**, and
+**Foil**. Foil is an engraved design; the optional Holographic finish can be
+applied to any back. Imported artwork replaces the entire back,
 so include the decal in the supplied design if you want it there.
 
 ## Deliverable
@@ -18,9 +20,10 @@ so include the decal in the supplied design if you want it there.
 | Orientation | A rotationally symmetric design is recommended |
 | Transparency | Allowed; the theme-coloured backing shows through |
 
-Artwork is fit without stretching inside the card's six-pixel inset. Cards are
-rendered at roughly 85–128 logical pixels wide in normal window sizes, so check
-that fine detail survives at 100 pixels. High-DPI displays use vector rendering.
+Artwork is fit without stretching inside the card's five-pixel inset. Cards are
+rendered at roughly 96–124 logical pixels wide in normal window sizes, so check
+that fine detail survives at 100 pixels. SVG art is rasterized into a bounded 500 × 700 texture; built-in backs use the same resolution with mipmap filtering. Faces use cached
+250 × 350 textures with separate illustrated courts.
 
 SVG supports svg, g, path, rect, circle, ellipse, line, polyline, polygon, defs,
 linearGradient, radialGradient, stop, clipPath, title and desc. Internal
@@ -36,7 +39,7 @@ code shipped inside a theme.
 
 1. Open Deck & settings.
 2. Import the SVG or PNG.
-3. Select Custom. The app copies the artwork to its own save directory.
+3. Select Special. The app copies the artwork to its own save directory.
 4. Optionally enable Holographic finish; hover over a back to see the sheen.
 5. Check both light and dark themes, the 800 × 600 window, and Reduce motion.
 
@@ -56,13 +59,13 @@ directories; the app reads the staged `current/theme/solitaire/` artwork.
 When theme following is enabled, palette and artwork are checked every 1.5
 seconds using file metadata. Atomic directory replacements and symlink target
 changes are detected. Invalid artwork falls back to the built-in decal and is
-reported in settings. An explicitly selected Custom back takes precedence over
+reported in settings. An explicitly selected Special back takes precedence over
 theme-provided artwork.
 
 The built-in holographic finish adds a restrained multicolour sheen on hover.
 It becomes static with Reduce motion. A future per-deck manifest can add finish
 defaults and creator metadata without changing Klondike's rules or save schema;
-no manifest format is promised in v0.1.0.
+no manifest format is promised in v0.2.0.
 
 ## Brand source
 

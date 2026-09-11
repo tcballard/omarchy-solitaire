@@ -1,20 +1,23 @@
 Omarchy brand artwork
 =====================
 
-omarchy_solitaire/assets/omarchy-logo.svg reproduces the official Omarchy logo
+assets/omarchy-logo.svg reproduces the official Omarchy logo
 from https://omarchy.org/brand/omarchy-logo.svg, linked by
 https://omarchy.org/brand/ and retrieved on 12 September 2026 (UTC).
 Its geometry and published #9ece6a fill are unchanged.
 
-omarchy_solitaire/assets/solitaire.svg combines original card artwork with
+assets/solitaire.svg combines original card artwork with
 that same official logo, scaled without changing its geometry.
 
 The Omarchy brand page states: "Omarchy is a pending trademark. All rights
 reserved." These marks are not relicensed under this project's MIT license.
 This is a community application; it does not claim Foundation endorsement.
 
-The playing-card faces and back patterns are original vector/QML artwork.
+The playing-card faces combine original generated court illustrations with
+Rust-authored SVG faces and back patterns. Rank outlines derive from DejaVu
+Serif; its license is included in THIRD_PARTY_LICENSES.txt and
+assets/deck/FONT-LICENSE.txt. See assets/deck/README.md for artwork provenance.
 No Microsoft card artwork, executables or game assets are included.
 
-PySide6 and Qt remain under their own licenses. The application uses system
-packages on Arch Linux; this repository does not bundle Qt binaries.
+Rust dependencies retain their respective licenses. See THIRD_PARTY.md and
+Cargo.lock for the dependency and license inventory.
