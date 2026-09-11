@@ -26,7 +26,7 @@ The repository builds an Arch package; it does not require the plugin shell.
 ```sh
 git clone https://github.com/tcballard/omarchy-solitaire.git
 cd omarchy-solitaire
-makepkg -p packaging/PKGBUILD -si
+makepkg -si
 ```
 
 `makepkg` must run as your ordinary user. It asks pacman to install dependencies.

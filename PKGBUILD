@@ -1,4 +1,4 @@
-# Build from a checkout with: makepkg -p packaging/PKGBUILD -s
+# Build from the checkout root with: makepkg -s
 pkgname=omarchy-solitaire
 pkgver=0.1.0
 pkgrel=1

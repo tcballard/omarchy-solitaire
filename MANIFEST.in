@@ -1,4 +1,4 @@
-include LICENSE NOTICE README.md
+include LICENSE NOTICE README.md PKGBUILD
 recursive-include docs *.md
 recursive-include packaging *
 recursive-include tests *.py

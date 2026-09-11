@@ -33,7 +33,11 @@ jobs:
       - run: |
           useradd -m builder
           chown -R builder:builder "$GITHUB_WORKSPACE"
-          su builder -c "cd '$GITHUB_WORKSPACE' && makepkg -p packaging/PKGBUILD --noconfirm"
+          su builder -c "cd '$GITHUB_WORKSPACE' && makepkg --noconfirm"
+      - name: Install and launch the built package
+        run: |
+          pacman -U --noconfirm ./*.pkg.tar.zst
+          su builder -c 'cd /tmp && QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software omarchy-solitaire --state-dir /tmp/solitaire-package-test --screenshot /tmp/solitaire-package.png'
       - uses: actions/upload-artifact@v4
         with:
           name: arch-package
